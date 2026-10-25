@@ -1,0 +1,17 @@
+FROM python:3.12-slim
+
+COPY --from=ghcr.io/astral-sh/uv:0.13.5 /uv /uvx /bin/
+WORKDIR /app
+COPY pyproject.toml uv.lock README.md ./
+COPY src ./src
+COPY frontend ./frontend
+COPY alembic.ini ./
+COPY migrations ./migrations
+RUN uv sync --frozen --no-dev --no-install-project
+RUN uv sync --frozen --no-dev
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONDONTWRITEBYTECODE=1
+RUN useradd --system --create-home --uid 10001 app
+USER app
+EXPOSE 8000
+CMD ["uvicorn", "windiq.main:app", "--host", "0.0.0.0", "--port", "8000"]
