@@ -42,3 +42,9 @@ variable "ssh_source_ranges" {
     error_message = "Provide at least one SSH source CIDR range."
   }
 }
+
+variable "alert_email" {
+  description = "Email address for Cloud Monitoring alerts; omit to create checks without email notifications."
+  type        = string
+  default     = null
+}

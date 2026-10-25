@@ -4,3 +4,6 @@ ssh_public_key = "ssh-ed25519 AAAA... windiq-deploy"
 # A GitHub-hosted runner needs SSH reachability. Restrict this range if you
 # switch to a runner with a fixed address.
 ssh_source_ranges = ["0.0.0.0/0"]
+
+# Optional: receive an email if public health checks fail.
+# alert_email = "you@example.com"

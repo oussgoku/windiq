@@ -1,5 +1,7 @@
 # WindIQ
 
+[Live demo](https://34.32.49.87.sslip.io/) · [Public health](https://34.32.49.87.sslip.io/health/ingestion)
+
 WindIQ ingests hourly mast measurements and estimates wind-turbine energy. A
 FastAPI service serves both the JSON API and a small browser dashboard; a
 separate worker keeps the measurements up to date.

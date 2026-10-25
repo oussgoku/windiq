@@ -29,6 +29,8 @@ Replace the placeholder public key in `terraform.tfvars` with the contents of
 example allows SSH from any IPv4 address because GitHub-hosted runners do not
 have a small fixed IP range. SSH still requires your private key. If you later
 use a runner with a fixed address, narrow `ssh_source_ranges` to that CIDR.
+Set `alert_email` in `terraform.tfvars` to receive Cloud Monitoring alerts for
+`/ready` and `/health/ingestion`.
 
 ```sh
 terraform init
@@ -108,8 +110,9 @@ unhealthy until the first successful upstream pass; then check it again after
 more than one hourly cycle. Check the annual energy card against
 `/energy/annual` and confirm it reports coverage and exclusions.
 
-Configure an external uptime check for `/ready` and `/health/ingestion` with
-alerting to your email. The ingestion endpoint returns 503 after a failed run
+Terraform configures external uptime checks for `/ready` and
+`/health/ingestion`; with `alert_email` set, failed checks alert by email.
+The ingestion endpoint returns 503 after a failed run
 or if the last success exceeds the configured freshness period. Keep the
 single worker replica; two workers may run duplicate syncs. On the VM,
 `docker compose --env-file .env -f compose.production.yaml ps` and
