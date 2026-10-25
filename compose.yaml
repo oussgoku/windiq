@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: windiq
+      POSTGRES_USER: windiq
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U windiq -d windiq"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://windiq:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/windiq
+      WINDIQ_API_BASE_URL: ${WINDIQ_API_BASE_URL:-https://api.example.invalid}
+      WINDIQ_CLIENT_ID: ${WINDIQ_CLIENT_ID:-}
+      WINDIQ_CLIENT_SECRET: ${WINDIQ_CLIENT_SECRET:-}
+      INGEST_STALE_AFTER_SECONDS: ${INGEST_STALE_AFTER_SECONDS:-9000}
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  scheduler:
+    build: .
+    command: ["python", "-m", "windiq.scheduler"]
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://windiq:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/windiq
+      WINDIQ_API_BASE_URL: ${WINDIQ_API_BASE_URL:-https://api.example.invalid}
+      WINDIQ_CLIENT_ID: ${WINDIQ_CLIENT_ID:-}
+      WINDIQ_CLIENT_SECRET: ${WINDIQ_CLIENT_SECRET:-}
+      INGEST_INTERVAL_SECONDS: ${INGEST_INTERVAL_SECONDS:-3600}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
