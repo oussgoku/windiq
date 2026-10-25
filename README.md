@@ -1,3 +1,82 @@
 # WindIQ
 
-Wind energy monitoring and annual yield estimates.
+WindIQ ingests hourly mast measurements and estimates wind-turbine energy. A
+FastAPI service serves both the JSON API and a small browser dashboard; a
+separate worker keeps the measurements up to date.
+
+## Run locally
+
+Copy `.env.example` to `.env`. Set `POSTGRES_PASSWORD` to a random hex string
+(for example, from `openssl rand -hex 24`), then set the upstream API URL, client
+ID, and secret. Keep `.env` out of Git.
+
+```sh
+docker compose up -d db
+docker compose run --rm api alembic upgrade head
+docker compose up -d api scheduler
+```
+
+Open <http://localhost:8000>. The worker ingests immediately and then on each
+hourly boundary. Both published ports bind to localhost; the database is not
+exposed to other machines. To run Python commands on the host, also set
+`DATABASE_URL=postgresql+psycopg://windiq:<password>@localhost:5432/windiq`
+in `.env` and install Python 3.12 and [uv](https://docs.astral.sh/uv/).
+
+## API
+
+| Route | Purpose |
+| --- | --- |
+| `GET /health` | Process liveness |
+| `GET /ready` | Database readiness |
+| `GET /health/ingestion` | Latest run and freshness; 503 after a failure or prolonged gap |
+| `GET /energy/annual` | Rolling 12-month AEP, P50, P90, and coverage |
+| `GET /energy?start=...&end=...` | Observed energy for a selected UTC window |
+
+The annual window ends at the current UTC midnight and starts on the same date
+one year earlier. It includes the start and excludes the end. The API reports
+observed energy separately from the annual estimate. For the estimate, it
+multiplies observed energy by `expected_hours / usable_hours`. This assumes
+missing and invalid hours resemble usable hours; low coverage makes the result
+less reliable. With no usable hours, the annual estimate is `null`. Monthly
+bars show observed energy and are never scaled.
+
+`/energy` accepts timezone-aware timestamps aligned to UTC hours, with a maximum
+window of two years. It sums only
+usable observations, with no gap filling or annualization. Both energy routes
+report expected, observed, and usable hours, exclusions, monthly energy, and a
+seven-day wind series with gaps for missing readings.
+
+The calculation adjusts measured speed to hub height using the site shear
+exponent, interpolates the turbine power curve, and sums hourly kW as MWh.
+P50 applies availability, electrical, and wake losses in sequence. P90 is
+`P50 × (1 − 1.282 × uncertainty)`. Source km/h readings are converted to m/s
+for calculation only; raw values remain in the database.
+
+## Ingestion and operation
+
+The worker authenticates to the [WindIQ upstream API](https://windiq-mock-api.sliplane.app/docs),
+reads paginated measurements, and saves each pass in `ingestion_runs`. It uses
+the latest source update time with a one-second overlap so corrected records
+are picked up. Measurements and the sync checkpoint commit together after the
+last page. Invalid readings are retained and counted, rather than turned into
+zero wind speeds.
+
+Run one pass with `uv run python -m windiq.ingest`. The scheduler interval
+defaults to 3600 seconds. `/health/ingestion` becomes unhealthy when the latest
+run fails or the last success is more than 9000 seconds old. Run one scheduler
+replica and monitor both `/ready` and `/health/ingestion` from outside the VM.
+Apply migrations before starting the API and worker on each release.
+
+The Compose file is for local use and binds the API to localhost. Public
+deployment needs a reverse proxy with HTTPS, VM firewall rules, and host-managed
+secrets. The GitHub workflow tests changes and publishes an image to GHCR after
+a successful push to `main`; VM rollout is not configured yet.
+
+## Checks
+
+```sh
+uv sync --frozen
+uv run pytest
+uv run ruff check .
+uv run ruff format --check .
+```
