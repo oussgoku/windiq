@@ -9,3 +9,10 @@ __pycache__/
 *.egg-info/
 dist/
 .DS_Store
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+terraform.tfvars
+*.auto.tfvars
+crash.log

@@ -4,25 +4,57 @@ This setup uses one Compute Engine VM for PostgreSQL, the API, the hourly
 worker, and Caddy. GitHub Actions builds a commit-tagged image and can deploy
 it after the VM is ready. The example project ID is `windiq`.
 
-## 1. Create the VM
+## 1. Create the VM with Terraform
 
-In the [Google Cloud console](https://console.cloud.google.com/compute/instances?project=windiq),
-select project `windiq` and create an Ubuntu 24.04 LTS VM. An `e2-medium`
-instance in `europe-west10` (Berlin) is a reasonable starting size. Use a
-standard persistent boot disk with at least 20 GB and reserve an external
-static IPv4 address. Enable HTTP and HTTPS traffic, which opens ports 80 and
-443. Keep SSH access restricted to your own IP if practical. No database or
-application port needs an external firewall rule.
+The [`infra/`](../infra) configuration creates an Ubuntu 24.04 LTS
+`e2-medium` VM in Berlin, a 20 GB boot disk, a static IPv4 address, a private
+VPC, and firewall rules for HTTP, HTTPS, and SSH. No database or application
+port is exposed. It also enables the Compute Engine API.
+
+Install [Terraform](https://developer.hashicorp.com/terraform/install) and
+the [Google Cloud CLI](https://cloud.google.com/sdk/docs/install), then
+authenticate locally using [Application Default Credentials](https://docs.cloud.google.com/docs/terraform/authentication):
+
+```sh
+gcloud init
+gcloud auth application-default login
+gcloud config set project windiq
+ssh-keygen -t ed25519 -f ~/.ssh/windiq_deploy -C windiq-deploy
+cd infra
+cp terraform.tfvars.example terraform.tfvars
+```
+
+Replace the placeholder public key in `terraform.tfvars` with the contents of
+`~/.ssh/windiq_deploy.pub`. Keep the private key out of the repository. The
+example allows SSH from any IPv4 address because GitHub-hosted runners do not
+have a small fixed IP range. SSH still requires your private key. If you later
+use a runner with a fixed address, narrow `ssh_source_ranges` to that CIDR.
+
+```sh
+terraform init
+terraform fmt -check
+terraform validate
+terraform plan -out=windiq.tfplan
+terraform apply windiq.tfplan
+terraform output external_ip
+terraform output site_domain
+```
+
+Review the plan before applying it. Keep the `infra/terraform.tfstate` file:
+Terraform needs it to update or destroy these resources. It is ignored by Git.
+Do not manually create resources with the same names before applying this plan.
 
 The VM, disk, and public IPv4 address consume trial credit while allocated.
 Review the estimate in the console and create a billing budget alert. Delete
 the VM and release the address when you finish the exercise.
 
-Install [Docker Engine and the Compose plugin](https://docs.docker.com/engine/install/ubuntu/)
-on the VM using Docker's Ubuntu instructions. The deployment SSH user needs
-permission to run `docker compose` without `sudo`; membership in the `docker`
-group grants root-equivalent access, so use a dedicated deployment account and
-protect its SSH key. Create `/opt/windiq` owned by that account.
+Connect using the `ssh_command` Terraform output and install
+[Docker Engine and the Compose plugin](https://docs.docker.com/engine/install/ubuntu/)
+using Docker's Ubuntu instructions. The instance SSH user is `windiq`.
+It needs permission to run `docker compose` without `sudo`; membership in the
+`docker` group grants root-equivalent access, so protect its SSH key. Create
+`/opt/windiq` owned by `windiq`. Log out and reconnect after adding the user
+to the Docker group so the group membership takes effect.
 
 ## 2. Create VM-only configuration
 
@@ -46,14 +78,14 @@ Keep `.env` on the VM and out of GitHub.
 
 ## 3. Connect GitHub Actions
 
-Create an Ed25519 SSH key specifically for deployment. Install its public key
-for the deployment account on the VM. Add these repository Actions secrets
+Use the Ed25519 deployment key whose public half Terraform installed on the
+VM. Add these repository Actions secrets
 under **Settings → Secrets and variables → Actions**:
 
 | Secret | Value |
 | --- | --- |
 | `DEPLOY_HOST` | VM static IPv4 address |
-| `DEPLOY_USER` | VM deployment account name |
+| `DEPLOY_USER` | `windiq` |
 | `DEPLOY_SSH_KEY` | Complete private key, including header and footer |
 | `DEPLOY_KNOWN_HOSTS` | Verified SSH host-key line for the VM address |
 
@@ -87,3 +119,5 @@ show service status and ingestion logs.
 The database lives in a Docker volume on one VM. For work beyond this short
 case study, configure backups before relying on the data. Removing the VM or
 its disk without a backup loses the measurements and ingestion history.
+When finished, run `terraform destroy` from `infra/` with the same state file
+and variable values, then confirm the VM and static IP are gone in Google Cloud.

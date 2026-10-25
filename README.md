@@ -68,8 +68,8 @@ replica and monitor both `/ready` and `/health/ingestion` from outside the VM.
 Apply migrations before starting the API and worker on each release.
 
 The default Compose file is for local use and binds the API to localhost.
-The [Google Cloud deployment guide](docs/deployment.md) covers the production
-Compose file, HTTPS, VM secrets, and GitHub Actions rollout. Deployment stays
+The [Google Cloud deployment guide](docs/deployment.md) covers Terraform,
+production Compose, HTTPS, VM secrets, and GitHub Actions rollout. Deployment stays
 disabled until the VM and repository secrets are configured.
 
 ## Checks
