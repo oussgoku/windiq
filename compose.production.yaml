@@ -1,0 +1,62 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: windiq
+      POSTGRES_USER: windiq
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U windiq -d windiq"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    image: ${WINDIQ_IMAGE:?Set WINDIQ_IMAGE}
+    environment:
+      DATABASE_URL: postgresql+psycopg://windiq:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/windiq
+      WINDIQ_API_BASE_URL: ${WINDIQ_API_BASE_URL:?Set WINDIQ_API_BASE_URL in .env}
+      WINDIQ_CLIENT_ID: ${WINDIQ_CLIENT_ID:?Set WINDIQ_CLIENT_ID in .env}
+      WINDIQ_CLIENT_SECRET: ${WINDIQ_CLIENT_SECRET:?Set WINDIQ_CLIENT_SECRET in .env}
+      INGEST_STALE_AFTER_SECONDS: ${INGEST_STALE_AFTER_SECONDS:-9000}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  scheduler:
+    image: ${WINDIQ_IMAGE:?Set WINDIQ_IMAGE}
+    command: ["python", "-m", "windiq.scheduler"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://windiq:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/windiq
+      WINDIQ_API_BASE_URL: ${WINDIQ_API_BASE_URL:?Set WINDIQ_API_BASE_URL in .env}
+      WINDIQ_CLIENT_ID: ${WINDIQ_CLIENT_ID:?Set WINDIQ_CLIENT_ID in .env}
+      WINDIQ_CLIENT_SECRET: ${WINDIQ_CLIENT_SECRET:?Set WINDIQ_CLIENT_SECRET in .env}
+      INGEST_INTERVAL_SECONDS: ${INGEST_INTERVAL_SECONDS:-3600}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  proxy:
+    image: caddy:2
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

@@ -67,10 +67,10 @@ run fails or the last success is more than 9000 seconds old. Run one scheduler
 replica and monitor both `/ready` and `/health/ingestion` from outside the VM.
 Apply migrations before starting the API and worker on each release.
 
-The Compose file is for local use and binds the API to localhost. Public
-deployment needs a reverse proxy with HTTPS, VM firewall rules, and host-managed
-secrets. The GitHub workflow tests changes and publishes an image to GHCR after
-a successful push to `main`; VM rollout is not configured yet.
+The default Compose file is for local use and binds the API to localhost.
+The [Google Cloud deployment guide](docs/deployment.md) covers the production
+Compose file, HTTPS, VM secrets, and GitHub Actions rollout. Deployment stays
+disabled until the VM and repository secrets are configured.
 
 ## Checks
 
