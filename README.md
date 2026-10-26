@@ -24,6 +24,18 @@ exposed to other machines. To run Python commands on the host, also set
 `DATABASE_URL=postgresql+psycopg://windiq:<password>@localhost:5432/windiq`
 in `.env` and install Python 3.12 and [uv](https://docs.astral.sh/uv/).
 
+To preview the dashboard layout without API credentials or a database, run
+`python3 -m http.server 8001 --directory frontend` and open
+<http://localhost:8001/?demo=1>. This mode is clearly labeled and uses sample
+figures; the normal app at port 8000 uses live API and database data.
+
+To test the frontend and API together without upstream credentials, run
+`docker compose -f compose.preview.yaml up -d --build` and open
+<http://localhost:8000>. This starts an isolated PostgreSQL test database and
+labels the generated data in the dashboard. It does not run the ingestion
+worker or use the normal local database. Stop it with
+`docker compose -f compose.preview.yaml down`.
+
 ## API
 
 | Route | Purpose |
@@ -33,6 +45,7 @@ in `.env` and install Python 3.12 and [uv](https://docs.astral.sh/uv/).
 | `GET /health/ingestion` | Latest run and freshness; 503 after a failure or prolonged gap |
 | `GET /energy/annual` | Rolling 12-month AEP, P50, P90, and coverage |
 | `GET /energy?start=...&end=...` | Observed energy for a selected UTC window |
+| `GET /dashboard/context` | Site inputs, recent measurements, and collection status for the dashboard |
 
 The annual window ends at the current UTC midnight and starts on the same date
 one year earlier. It includes the start and excludes the end. The API reports

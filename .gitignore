@@ -16,3 +16,4 @@ dist/
 terraform.tfvars
 *.auto.tfvars
 crash.log
+/dashboard-preview.png

@@ -1,0 +1,32 @@
+name: windiq-preview
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: windiq_preview
+      POSTGRES_USER: windiq_preview
+      POSTGRES_PASSWORD: local-preview-only
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U windiq_preview -d windiq_preview"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  app:
+    build: .
+    command: ["python", "/app/local_preview.py"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://windiq_preview:local-preview-only@db:5432/windiq_preview
+      DASHBOARD_DATA_MODE: fixture
+      WINDIQ_PREVIEW: "1"
+      PYTHONPATH: /app/src
+    volumes:
+      - ./src:/app/src:ro
+      - ./frontend:/app/frontend:ro
+      - ./scripts/local_preview.py:/app/local_preview.py:ro
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
