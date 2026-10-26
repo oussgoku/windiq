@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -13,6 +14,7 @@ class Settings(BaseSettings):
     windiq_client_secret: SecretStr | None = None
     ingest_interval_seconds: int = Field(default=3600, ge=60)
     ingest_stale_after_seconds: int = Field(default=9000, ge=60)
+    dashboard_data_mode: Literal["live", "fixture"] = "live"
 
 
 @lru_cache
