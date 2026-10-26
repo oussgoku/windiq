@@ -29,6 +29,9 @@ To preview the dashboard layout without API credentials or a database, run
 <http://localhost:8001/?demo=1>. This mode is clearly labeled and uses sample
 figures; the normal app at port 8000 uses live API and database data.
 
+The dashboard opens in German. Use the DE/EN control in the header to switch
+languages; the choice is saved in the browser for later visits.
+
 To test the frontend and API together without upstream credentials, run
 `docker compose -f compose.preview.yaml up -d --build` and open
 <http://localhost:8000>. This starts an isolated PostgreSQL test database and

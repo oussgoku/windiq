@@ -1,96 +1,97 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f7f9fc" />
-    <meta name="description" content="WindIQ wind energy and data collection dashboard." />
-    <title>WindIQ | Energy yield overview</title>
+    <meta name="description" content="WindIQ Dashboard für Windertrag und Datenerfassung." />
+    <title>WindIQ | Energieertrag im Überblick</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=10" />
-    <script defer src="./app.js?v=10"></script>
+    <link rel="stylesheet" href="./styles.css?v=11" />
+    <script defer src="./app.js?v=11"></script>
   </head>
   <body>
     <header class="site-header">
       <div class="shell header-inner">
-        <a class="brand" href="#overview" aria-label="WindIQ overview">Wind<span>IQ</span></a>
-        <nav class="top-nav" aria-label="Main navigation">
-          <a href="#overview" class="is-active" aria-current="location">Overview</a>
-          <a href="#measurements">Measurements</a>
-          <a href="#operations">Operations</a>
+        <a class="brand" href="#overview" aria-label="WindIQ Übersicht" data-i18n-aria="brand">Wind<span>IQ</span></a>
+        <nav class="top-nav" aria-label="Hauptnavigation" data-i18n-aria="navigation">
+          <a href="#overview" class="is-active" aria-current="location" data-i18n="overview">Übersicht</a>
+          <a href="#measurements" data-i18n="measurements">Messwerte</a>
+          <a href="#operations" data-i18n="operations">Betrieb</a>
         </nav>
-        <div id="status-pill" class="status-pill is-unknown"><span class="status-dot"></span><span id="status-label">Checking status</span></div>
+        <div class="header-actions"><div class="language-switch" role="group" aria-label="Sprache wählen" data-i18n-aria="languageLabel"><button type="button" data-language="de" aria-pressed="true">DE</button><button type="button" data-language="en" aria-pressed="false">EN</button></div>
+        <div id="status-pill" class="status-pill is-unknown"><span class="status-dot"></span><span id="status-label" data-i18n="checkingStatus">Status wird geprüft</span></div></div>
       </div>
     </header>
 
     <main class="shell" id="overview">
       <div class="page-heading">
         <div>
-          <h1>Energy yield overview</h1>
-          <p><span id="site-name">Wind site</span><span class="heading-separator"> · </span>Reference turbine <span id="rated-power">—</span> MW</p>
+          <h1 data-i18n="pageTitle">Energieertrag im Überblick</h1>
+          <p><span id="site-name" data-i18n="windSite">Windpark</span><span class="heading-separator"> · </span><span data-i18n="referenceTurbine">Referenzturbine</span> <span id="rated-power">—</span> MW</p>
         </div>
         <div class="heading-actions">
-          <span id="data-badge" class="data-badge" hidden>Demo preview · Sample data</span>
-          <label class="period-control"><span class="calendar-icon" aria-hidden="true">▣</span><span class="sr-only">Time period</span><select id="period-select"><option value="year">Last 12 months</option><option value="30">Last 30 days</option><option value="7">Last 7 days</option><option value="custom">Custom period</option></select><span aria-hidden="true">⌄</span></label>
+          <span id="data-badge" class="data-badge" hidden></span>
+          <label class="period-control"><span class="calendar-icon" aria-hidden="true">▣</span><span class="sr-only" data-i18n="timePeriod">Zeitraum</span><select id="period-select"><option value="year" data-i18n="last12Months">Letzte 12 Monate</option><option value="30" data-i18n="last30Days">Letzte 30 Tage</option><option value="7" data-i18n="last7Days">Letzte 7 Tage</option><option value="custom" data-i18n="customPeriod">Eigener Zeitraum</option></select><span aria-hidden="true">⌄</span></label>
         </div>
       </div>
 
       <form id="custom-form" class="custom-form" hidden>
-        <label>Start date <input id="start-date" type="date" required /></label>
-        <label>End date <input id="end-date" type="date" required /></label>
-        <button type="submit">Apply period</button>
-        <span>UTC dates · end date excluded</span>
+        <label><span data-i18n="startDate">Startdatum</span> <input id="start-date" type="date" required /></label>
+        <label><span data-i18n="endDate">Enddatum</span> <input id="end-date" type="date" required /></label>
+        <button type="submit" data-i18n="applyPeriod">Zeitraum anwenden</button>
+        <span data-i18n="dateHint">UTC-Daten · Enddatum ausgeschlossen</span>
       </form>
       <p id="form-error" class="form-error" role="alert" hidden></p>
       <div id="feedback" class="feedback" role="status" aria-live="polite" hidden></div>
 
-      <div class="sync-strip" aria-label="Collection times">
-        <div><span class="strip-icon" aria-hidden="true">◷</span><span>Last measurement: <strong id="last-measurement">—</strong></span></div>
-        <div><span class="strip-icon" aria-hidden="true">⟳</span><span><span id="last-sync-caption">Last successful sync:</span> <strong id="last-sync">—</strong></span></div>
-        <div><span class="strip-icon" aria-hidden="true">▣</span><span><span id="next-sync-caption">Next scheduled sync:</span> <strong id="next-sync">—</strong></span></div>
+      <div class="sync-strip" aria-label="Erfassungszeiten" data-i18n-aria="collectionTimes">
+        <div><span class="strip-icon" aria-hidden="true">◷</span><span><span data-i18n="lastMeasurement">Letzter Messwert:</span> <strong id="last-measurement">—</strong></span></div>
+        <div><span class="strip-icon" aria-hidden="true">⟳</span><span><span id="last-sync-caption" data-i18n="lastSuccessfulSync">Letzte erfolgreiche Synchronisierung:</span> <strong id="last-sync">—</strong></span></div>
+        <div><span class="strip-icon" aria-hidden="true">▣</span><span><span id="next-sync-caption" data-i18n="nextScheduledSync">Nächste Synchronisierung:</span> <strong id="next-sync">—</strong></span></div>
       </div>
 
-      <section class="kpi-grid" aria-label="Energy and coverage summary">
-        <article class="kpi-card"><div class="kpi-heading"><span class="kpi-icon teal" aria-hidden="true">ϟ</span><h2 id="gross-label">Gross AEP</h2><span class="info-mark" title="Before site losses">ⓘ</span></div><div class="kpi-value"><strong id="gross-value">—</strong><span>MWh</span></div><p id="gross-note">Before site losses</p></article>
-        <article class="kpi-card kpi-featured"><div class="kpi-heading"><span class="kpi-icon teal" aria-hidden="true">▥</span><h2 id="p50-label">Net AEP · P50</h2><span class="info-mark" title="After availability, electrical, and wake losses">ⓘ</span></div><div class="kpi-value"><strong id="p50-value">—</strong><span>MWh</span></div><p id="p50-note">Central estimate after site losses</p></article>
-        <article class="kpi-card kpi-blue"><div class="kpi-heading"><span class="kpi-icon blue" aria-hidden="true">▥</span><h2 id="p90-label">P90</h2><span class="info-mark" title="P50 adjusted for uncertainty">ⓘ</span></div><div class="kpi-value"><strong id="p90-value">—</strong><span>MWh</span></div><p id="p90-note">Conservative estimate</p></article>
-        <article class="kpi-card"><div class="kpi-heading"><span class="kpi-icon teal" aria-hidden="true">◕</span><h2>Data coverage</h2><span class="info-mark" title="Usable measurement hours divided by expected hours">ⓘ</span></div><div class="kpi-value"><strong id="coverage-value">—</strong></div><p id="coverage-note">— usable hours</p></article>
+      <section class="kpi-grid" aria-label="Ertrag und Datenabdeckung" data-i18n-aria="summaryLabel">
+        <article class="kpi-card"><div class="kpi-heading"><span class="kpi-icon teal" aria-hidden="true">ϟ</span><h2 id="gross-label" data-i18n="grossAnnual">Brutto-AEP</h2><span class="info-mark" title="Vor Standortverlusten" data-i18n-title="grossTooltip">ⓘ</span></div><div class="kpi-value"><strong id="gross-value">—</strong><span>MWh</span></div><p id="gross-note" data-i18n="grossAnnualNote">Geschätzter Jahresertrag vor Verlusten</p></article>
+        <article class="kpi-card kpi-featured"><div class="kpi-heading"><span class="kpi-icon teal" aria-hidden="true">▥</span><h2 id="p50-label" data-i18n="p50Annual">Netto-AEP · P50</h2><span class="info-mark" title="Nach Verfügbarkeits-, elektrischen und Nachlaufverlusten" data-i18n-title="p50Tooltip">ⓘ</span></div><div class="kpi-value"><strong id="p50-value">—</strong><span>MWh</span></div><p id="p50-note" data-i18n="p50AnnualNote">Geschätzter Jahresertrag nach Verlusten</p></article>
+        <article class="kpi-card kpi-blue"><div class="kpi-heading"><span class="kpi-icon blue" aria-hidden="true">▥</span><h2 id="p90-label" data-i18n="p90Annual">P90</h2><span class="info-mark" title="P50 mit Unsicherheit angepasst" data-i18n-title="p90Tooltip">ⓘ</span></div><div class="kpi-value"><strong id="p90-value">—</strong><span>MWh</span></div><p id="p90-note" data-i18n="p90AnnualNote">Jahresschätzung mit Unsicherheit</p></article>
+        <article class="kpi-card"><div class="kpi-heading"><span class="kpi-icon teal" aria-hidden="true">◕</span><h2 data-i18n="dataCoverage">Datenabdeckung</h2><span class="info-mark" title="Nutzbare Messstunden geteilt durch erwartete Stunden" data-i18n-title="coverageTooltip">ⓘ</span></div><div class="kpi-value"><strong id="coverage-value">—</strong></div><p id="coverage-note" data-i18n="coveragePlaceholder">— nutzbare Stunden</p></article>
       </section>
 
       <div class="main-grid">
         <section class="panel monthly-panel" aria-labelledby="monthly-title">
-          <div class="panel-title"><h2 id="monthly-title"><span class="panel-icon" aria-hidden="true">⌁</span> Monthly energy</h2><span id="monthly-aside" class="panel-aside">Observed net energy · MWh</span></div>
-          <div class="chart-wrap"><div class="chart-y-axis" aria-hidden="true"><span id="chart-max">—</span><span id="chart-mid-high">—</span><span id="chart-mid-low">—</span><span>0</span></div><div class="chart-plot"><div class="chart-grid" aria-hidden="true"></div><div id="monthly-chart" class="monthly-chart" role="img" aria-label="Monthly observed net energy"></div></div></div>
+          <div class="panel-title"><h2 id="monthly-title"><span class="panel-icon" aria-hidden="true">⌁</span><span data-i18n="monthlyEnergy">Monatlicher Ertrag</span></h2><span id="monthly-aside" class="panel-aside" data-i18n="monthlyObserved">Beobachteter Nettoertrag · MWh</span></div>
+          <div class="chart-wrap"><div class="chart-y-axis" aria-hidden="true"><span id="chart-max">—</span><span id="chart-mid-high">—</span><span id="chart-mid-low">—</span><span>0</span></div><div class="chart-plot"><div class="chart-grid" aria-hidden="true"></div><div id="monthly-chart" class="monthly-chart" role="img" aria-label="Monatlicher beobachteter Nettoertrag" data-i18n-aria="monthlyChart"></div></div></div>
         </section>
         <section class="panel inputs-panel" aria-labelledby="inputs-title">
-          <div class="panel-title"><h2 id="inputs-title"><span class="panel-icon" aria-hidden="true">⚙</span> Calculation inputs</h2></div>
+          <div class="panel-title"><h2 id="inputs-title"><span class="panel-icon" aria-hidden="true">⚙</span><span data-i18n="calculationInputs">Berechnungsparameter</span></h2></div>
           <dl class="input-list">
-            <div><dt>Measurement height</dt><dd id="measurement-height">—</dd></div>
-            <div><dt>Hub height</dt><dd id="hub-height">—</dd></div>
-            <div><dt>Wind shear α</dt><dd id="shear">—</dd></div>
-            <div><dt>Availability loss</dt><dd id="availability-loss">—</dd></div>
-            <div><dt>Electrical loss</dt><dd id="electrical-loss">—</dd></div>
-            <div><dt>Wake loss</dt><dd id="wake-loss">—</dd></div>
-            <div><dt>Uncertainty</dt><dd id="uncertainty">—</dd></div>
+            <div><dt data-i18n="measurementHeight">Messhöhe</dt><dd id="measurement-height">—</dd></div>
+            <div><dt data-i18n="hubHeight">Nabenhöhe</dt><dd id="hub-height">—</dd></div>
+            <div><dt data-i18n="windShear">Windscherung α</dt><dd id="shear">—</dd></div>
+            <div><dt data-i18n="availabilityLoss">Verfügbarkeitsverlust</dt><dd id="availability-loss">—</dd></div>
+            <div><dt data-i18n="electricalLoss">Elektrischer Verlust</dt><dd id="electrical-loss">—</dd></div>
+            <div><dt data-i18n="wakeLoss">Nachlaufverlust</dt><dd id="wake-loss">—</dd></div>
+            <div><dt data-i18n="uncertainty">Unsicherheit</dt><dd id="uncertainty">—</dd></div>
           </dl>
         </section>
       </div>
 
       <div class="lower-grid">
         <section class="panel measurements-panel" id="measurements" aria-labelledby="measurements-title">
-          <div class="panel-title"><h2 id="measurements-title"><span class="panel-icon" aria-hidden="true">☷</span> Recent measurements</h2><span class="panel-aside">Times in UTC</span></div>
-          <div class="table-scroll"><table><thead><tr><th scope="col">Time (UTC)</th><th scope="col">Wind at mast<br><small>(m/s)</small></th><th scope="col">Wind at hub<br><small>(m/s)</small></th><th scope="col">Power<br><small>(MW)</small></th></tr></thead><tbody id="measurements-body"><tr><td colspan="4">Loading measurements…</td></tr></tbody></table></div>
+          <div class="panel-title"><h2 id="measurements-title"><span class="panel-icon" aria-hidden="true">☷</span><span data-i18n="recentMeasurements">Letzte Messwerte</span></h2><span class="panel-aside" data-i18n="timesUTC">Zeiten in UTC</span></div>
+          <div class="table-scroll"><table><thead><tr><th scope="col" data-i18n="timeUTC">Zeit (UTC)</th><th scope="col"><span data-i18n="windMast">Wind am Mast</span><br><small>(m/s)</small></th><th scope="col"><span data-i18n="windHub">Wind an der Nabe</span><br><small>(m/s)</small></th><th scope="col"><span data-i18n="power">Leistung</span><br><small>(MW)</small></th></tr></thead><tbody id="measurements-body"><tr><td colspan="4" data-i18n="loadingMeasurements">Messwerte werden geladen…</td></tr></tbody></table></div>
         </section>
         <section class="panel health-panel" id="operations" aria-labelledby="health-title">
-          <div class="panel-title"><h2 id="health-title"><span class="panel-icon health-icon" aria-hidden="true">⌁</span> Collection health</h2></div>
-          <div id="health-summary" class="health-summary">Loading collection history…</div>
-          <div class="history-heading"><span>Recent history</span><span></span></div>
+          <div class="panel-title"><h2 id="health-title"><span class="panel-icon health-icon" aria-hidden="true">⌁</span><span data-i18n="collectionHealth">Datenerfassung</span></h2></div>
+          <div id="health-summary" class="health-summary" data-i18n="loadingHistory">Verlauf wird geladen…</div>
+          <div class="history-heading"><span data-i18n="recentHistory">Letzte Ereignisse</span><span></span></div>
           <ul id="run-history" class="run-history"></ul>
         </section>
       </div>
 
-      <details class="methodology" id="methodology"><summary>Methodology and data quality <span aria-hidden="true">⌄</span></summary><div class="methodology-content"><p id="method-note"></p><div class="quality-grid"><div><span>Expected hours</span><strong id="expected-hours">—</strong></div><div><span>Observed hours</span><strong id="observed-hours">—</strong></div><div><span>Usable hours</span><strong id="usable-hours">—</strong></div><div><span>Excluded readings</span><strong id="excluded-hours">—</strong></div></div><p id="exclusion-note" class="subtle-note"></p></div></details>
-      <footer class="page-footer"><span>Hourly measurements · Rolling period · Times in UTC</span><a href="#methodology">Methodology ↗</a></footer>
+      <details class="methodology" id="methodology"><summary><span data-i18n="methodologyQuality">Methodik und Datenqualität</span><span aria-hidden="true">⌄</span></summary><div class="methodology-content"><p id="method-note"></p><div class="quality-grid"><div><span data-i18n="expectedHours">Erwartete Stunden</span><strong id="expected-hours">—</strong></div><div><span data-i18n="observedHours">Erfasste Stunden</span><strong id="observed-hours">—</strong></div><div><span data-i18n="usableHours">Nutzbare Stunden</span><strong id="usable-hours">—</strong></div><div><span data-i18n="excludedReadings">Ausgeschlossene Messwerte</span><strong id="excluded-hours">—</strong></div></div><p id="exclusion-note" class="subtle-note"></p></div></details>
+      <footer class="page-footer"><span data-i18n="footerNote">Stündliche Messwerte · Gleitender Zeitraum · Zeiten in UTC</span><a href="#methodology" data-i18n="methodologyLink">Methodik ↗</a></footer>
     </main>
   </body>
 </html>
