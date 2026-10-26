@@ -7,8 +7,8 @@
     <meta name="description" content="WindIQ Dashboard für Windertrag und Datenerfassung." />
     <title>WindIQ | Energieertrag im Überblick</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=11" />
-    <script defer src="./app.js?v=11"></script>
+    <link rel="stylesheet" href="./styles.css?v=12" />
+    <script defer src="./app.js?v=12"></script>
   </head>
   <body>
     <header class="site-header">
@@ -52,9 +52,9 @@
       </div>
 
       <section class="kpi-grid" aria-label="Ertrag und Datenabdeckung" data-i18n-aria="summaryLabel">
-        <article class="kpi-card"><div class="kpi-heading"><span class="kpi-icon teal" aria-hidden="true">ϟ</span><h2 id="gross-label" data-i18n="grossAnnual">Brutto-AEP</h2><span class="info-mark" title="Vor Standortverlusten" data-i18n-title="grossTooltip">ⓘ</span></div><div class="kpi-value"><strong id="gross-value">—</strong><span>MWh</span></div><p id="gross-note" data-i18n="grossAnnualNote">Geschätzter Jahresertrag vor Verlusten</p></article>
-        <article class="kpi-card kpi-featured"><div class="kpi-heading"><span class="kpi-icon teal" aria-hidden="true">▥</span><h2 id="p50-label" data-i18n="p50Annual">Netto-AEP · P50</h2><span class="info-mark" title="Nach Verfügbarkeits-, elektrischen und Nachlaufverlusten" data-i18n-title="p50Tooltip">ⓘ</span></div><div class="kpi-value"><strong id="p50-value">—</strong><span>MWh</span></div><p id="p50-note" data-i18n="p50AnnualNote">Geschätzter Jahresertrag nach Verlusten</p></article>
-        <article class="kpi-card kpi-blue"><div class="kpi-heading"><span class="kpi-icon blue" aria-hidden="true">▥</span><h2 id="p90-label" data-i18n="p90Annual">P90</h2><span class="info-mark" title="P50 mit Unsicherheit angepasst" data-i18n-title="p90Tooltip">ⓘ</span></div><div class="kpi-value"><strong id="p90-value">—</strong><span>MWh</span></div><p id="p90-note" data-i18n="p90AnnualNote">Jahresschätzung mit Unsicherheit</p></article>
+        <article class="kpi-card"><div class="kpi-heading"><span class="kpi-icon teal" aria-hidden="true">ϟ</span><h2 id="gross-label" data-i18n="grossAnnual">Brutto-AEP</h2><span class="info-mark" title="Vor Standortverlusten" data-i18n-title="grossTooltip">ⓘ</span></div><div class="kpi-value"><strong id="gross-value">—</strong><span>MWh</span></div><p id="gross-note" data-i18n="grossAnnualNote">Beobachtet · vor Verlusten</p></article>
+        <article class="kpi-card kpi-featured"><div class="kpi-heading"><span class="kpi-icon teal" aria-hidden="true">▥</span><h2 id="p50-label" data-i18n="p50Annual">Netto-AEP · P50</h2><span class="info-mark" title="Nach Verfügbarkeits-, elektrischen und Nachlaufverlusten" data-i18n-title="p50Tooltip">ⓘ</span></div><div class="kpi-value"><strong id="p50-value">—</strong><span>MWh</span></div><p id="p50-note" data-i18n="p50AnnualNote">Beobachtet · nach Verlusten</p></article>
+        <article class="kpi-card kpi-blue"><div class="kpi-heading"><span class="kpi-icon blue" aria-hidden="true">▥</span><h2 id="p90-label" data-i18n="p90Annual">P90</h2><span class="info-mark" title="P50 mit Unsicherheit angepasst" data-i18n-title="p90Tooltip">ⓘ</span></div><div class="kpi-value"><strong id="p90-value">—</strong><span>MWh</span></div><p id="p90-note" data-i18n="p90AnnualNote">Beobachtet · P90</p></article>
         <article class="kpi-card"><div class="kpi-heading"><span class="kpi-icon teal" aria-hidden="true">◕</span><h2 data-i18n="dataCoverage">Datenabdeckung</h2><span class="info-mark" title="Nutzbare Messstunden geteilt durch erwartete Stunden" data-i18n-title="coverageTooltip">ⓘ</span></div><div class="kpi-value"><strong id="coverage-value">—</strong></div><p id="coverage-note" data-i18n="coveragePlaceholder">— nutzbare Stunden</p></article>
       </section>
 
@@ -85,12 +85,13 @@
         <section class="panel health-panel" id="operations" aria-labelledby="health-title">
           <div class="panel-title"><h2 id="health-title"><span class="panel-icon health-icon" aria-hidden="true">⌁</span><span data-i18n="collectionHealth">Datenerfassung</span></h2></div>
           <div id="health-summary" class="health-summary" data-i18n="loadingHistory">Verlauf wird geladen…</div>
+          <p id="status-checked" class="status-checked"></p>
           <div class="history-heading"><span data-i18n="recentHistory">Letzte Ereignisse</span><span></span></div>
           <ul id="run-history" class="run-history"></ul>
         </section>
       </div>
 
-      <details class="methodology" id="methodology"><summary><span data-i18n="methodologyQuality">Methodik und Datenqualität</span><span aria-hidden="true">⌄</span></summary><div class="methodology-content"><p id="method-note"></p><div class="quality-grid"><div><span data-i18n="expectedHours">Erwartete Stunden</span><strong id="expected-hours">—</strong></div><div><span data-i18n="observedHours">Erfasste Stunden</span><strong id="observed-hours">—</strong></div><div><span data-i18n="usableHours">Nutzbare Stunden</span><strong id="usable-hours">—</strong></div><div><span data-i18n="excludedReadings">Ausgeschlossene Messwerte</span><strong id="excluded-hours">—</strong></div></div><p id="exclusion-note" class="subtle-note"></p></div></details>
+      <details class="methodology" id="methodology"><summary><span data-i18n="methodologyQuality">Methodik und Datenqualität</span><span aria-hidden="true">⌄</span></summary><div class="methodology-content"><p id="method-note"></p><p id="annualized-note" hidden></p><div class="quality-grid"><div><span data-i18n="expectedHours">Erwartete Stunden</span><strong id="expected-hours">—</strong></div><div><span data-i18n="observedHours">Erfasste Stunden</span><strong id="observed-hours">—</strong></div><div><span data-i18n="usableHours">Nutzbare Stunden</span><strong id="usable-hours">—</strong></div><div><span data-i18n="excludedReadings">Ausgeschlossene Messwerte</span><strong id="excluded-hours">—</strong></div></div><p id="exclusion-note" class="subtle-note"></p></div></details>
       <footer class="page-footer"><span data-i18n="footerNote">Stündliche Messwerte · Gleitender Zeitraum · Zeiten in UTC</span><a href="#methodology" data-i18n="methodologyLink">Methodik ↗</a></footer>
     </main>
   </body>

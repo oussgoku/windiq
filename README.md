@@ -30,7 +30,11 @@ To preview the dashboard layout without API credentials or a database, run
 figures; the normal app at port 8000 uses live API and database data.
 
 The dashboard opens in German. Use the DE/EN control in the header to switch
-languages; the choice is saved in the browser for later visits.
+languages; the choice is saved in the browser for later visits. The annual cards
+show energy calculated from usable measurements in the last 12 months. An
+additional gap-adjusted estimate appears in the methodology panel. Collection
+status and recent runs refresh every five minutes while the tab is visible,
+and the dashboard shows when they were last checked.
 
 To test the frontend and API together without upstream credentials, run
 `docker compose -f compose.preview.yaml up -d --build` and open
@@ -52,7 +56,7 @@ worker or use the normal local database. Stop it with
 
 The annual window ends at the current UTC midnight and starts on the same date
 one year earlier. It includes the start and excludes the end. The API reports
-observed energy separately from the annual estimate. For the estimate, it
+observed energy separately from an optional annualized estimate. For that estimate, it
 multiplies observed energy by `expected_hours / usable_hours`. This assumes
 missing and invalid hours resemble usable hours; low coverage makes the result
 less reliable. With no usable hours, the annual estimate is `null`. Monthly

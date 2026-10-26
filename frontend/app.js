@@ -22,14 +22,16 @@ const translations = {
     noMonthly: "Keine monatlichen Messwerte verfügbar.", barTitle: "{month}: {energy} MWh aus {hours} nutzbaren Stunden",
     barAria: "{month}: {energy} MWh beobachteter Nettoertrag", incompleteEnergy: "Die Ertragsdaten sind unvollständig.",
     grossAnnual: "Brutto-AEP", grossPeriod: "Bruttoertrag", p50Annual: "Netto-AEP · P50", p50Period: "Nettoertrag · P50",
-    p90Annual: "P90", p90Period: "P90-Ertrag", grossAnnualNote: "Geschätzter Jahresertrag vor Verlusten",
-    grossPeriodNote: "Beobachteter Zeitraum · vor Verlusten", p50AnnualNote: "Geschätzter Jahresertrag nach Verlusten",
-    p50PeriodNote: "Beobachteter Zeitraum · nach Verlusten", p90AnnualNote: "Jahresschätzung mit Unsicherheit",
+    p90Annual: "P90", p90Period: "P90-Ertrag", grossAnnualNote: "Beobachtet · vor Verlusten",
+    grossPeriodNote: "Beobachteter Zeitraum · vor Verlusten", p50AnnualNote: "Beobachtet · nach Verlusten",
+    p50PeriodNote: "Beobachteter Zeitraum · nach Verlusten", p90AnnualNote: "Beobachtet · P90",
     p90PeriodNote: "Beobachteter Zeitraum mit Unsicherheit", coverageNote: "{usable} / {expected} nutzbare Stunden",
     exclusionNote: "Ausgeschlossen: {missing} fehlend, {nonnumeric} nicht numerisch, {invalid} ungültig, {unit} nicht unterstützte Einheiten, {offhour} außerhalb voller Stunden.",
     partialMonths: " Der gleitende Zeitraum berührt 13 Kalendermonate; der erste und letzte Monat sind unvollständig.",
     monthlyPartial: "Beobachtete MWh · Teilmonate", monthlyObserved: "Beobachteter Nettoertrag · MWh",
-    annualMethod: "Die Jahresschätzung skaliert den Ertrag aus {usable} nutzbaren Stunden auf {expected} erwartete Stunden. Dabei wird angenommen, dass fehlende Stunden den gemessenen Stunden ähneln. Die Monatsbalken zeigen den beobachteten Nettoertrag und werden nicht skaliert.{partial}",
+    annualMethod: "Die AEP-Karten summieren den Ertrag aus {usable} nutzbaren Stunden der letzten 12 Monate. Fehlende Stunden werden nicht ergänzt. Die Monatsbalken zeigen ebenfalls den beobachteten Nettoertrag.{partial}",
+    annualizedMethod: "Zusätzliche Hochrechnung auf {expected} Stunden (Annahme: fehlende Stunden ähneln nutzbaren Stunden): Brutto {gross} MWh · P50 {p50} MWh · P90 {p90} MWh.",
+    annualizedUnavailable: "Eine Hochrechnung ist ohne nutzbare Messstunden nicht möglich.",
     periodMethod: "Diese Werte summieren nur nutzbare stündliche Messungen im gewählten UTC-Zeitraum. Fehlende Stunden werden nicht ergänzt; die Monatsbalken zeigen den beobachteten Nettoertrag.",
     noMeasurements: "Noch keine Messwerte verfügbar.", noRuns: "Noch keine Erfassungsläufe vorhanden.",
     sampleRun: "Beispieldaten geladen · {count} Datensätze", sampleRunOne: "Beispieldaten geladen · 1 Datensatz",
@@ -43,6 +45,7 @@ const translations = {
     testMode: "Testmodus · Datenerfassung nicht aktiv", latestSyncSucceeded: "Letzte Synchronisierung erfolgreich",
     collectionNeedsAttention: "Datenerfassung erfordert Aufmerksamkeit", statusUnavailable: "Status nicht verfügbar",
     collectionUnavailable: "Erfassungsdaten nicht verfügbar: {error}", energyUnavailable: "Ertragsdaten nicht verfügbar: {error}",
+    lastChecked: "Zuletzt geprüft: {time}",
     invalidDateOrder: "Das Enddatum muss nach dem Startdatum liegen.", periodTooLong: "Wählen Sie einen Zeitraum von höchstens zwei Jahren."
   },
   en: {
@@ -66,14 +69,16 @@ const translations = {
     noMonthly: "No monthly measurements available.", barTitle: "{month}: {energy} MWh from {hours} usable hours",
     barAria: "{month}: {energy} MWh observed net energy", incompleteEnergy: "The energy response is incomplete.",
     grossAnnual: "Gross AEP", grossPeriod: "Gross energy", p50Annual: "Net AEP · P50", p50Period: "Net energy · P50",
-    p90Annual: "P90", p90Period: "P90 energy", grossAnnualNote: "Estimated full-year yield before losses",
-    grossPeriodNote: "Observed period · before losses", p50AnnualNote: "Estimated full-year yield after losses",
-    p50PeriodNote: "Observed period · after losses", p90AnnualNote: "Full-year estimate with uncertainty",
+    p90Annual: "P90", p90Period: "P90 energy", grossAnnualNote: "Observed · before losses",
+    grossPeriodNote: "Observed period · before losses", p50AnnualNote: "Observed · after losses",
+    p50PeriodNote: "Observed period · after losses", p90AnnualNote: "Observed · P90",
     p90PeriodNote: "Observed period with uncertainty", coverageNote: "{usable} / {expected} usable hours",
     exclusionNote: "Excluded: {missing} missing, {nonnumeric} nonnumeric, {invalid} invalid, {unit} unsupported units, {offhour} off-hour.",
     partialMonths: " The rolling window touches 13 calendar months, with partial first and last months.",
     monthlyPartial: "Observed MWh · partial months", monthlyObserved: "Observed net energy · MWh",
-    annualMethod: "Annual estimates scale energy from {usable} usable hours to {expected} expected hours. This assumes missing hours resemble measured hours. Monthly bars show observed net energy and are never scaled.{partial}",
+    annualMethod: "The AEP cards sum energy from {usable} usable hours in the last 12 months. Missing hours are not filled in. Monthly bars also show observed net energy.{partial}",
+    annualizedMethod: "Additional estimate scaled to {expected} hours (assuming missing hours resemble usable hours): gross {gross} MWh · P50 {p50} MWh · P90 {p90} MWh.",
+    annualizedUnavailable: "An annualized estimate is unavailable without usable measurements.",
     periodMethod: "These figures sum only usable hourly measurements in the selected UTC window. Missing hours are not filled in; monthly bars show observed net energy.",
     noMeasurements: "No measurements available yet.", noRuns: "No collection runs recorded yet.",
     sampleRun: "Sample data loaded · {count} records", sampleRunOne: "Sample data loaded · 1 record",
@@ -87,6 +92,7 @@ const translations = {
     testMode: "Test mode · ingestion is not running", latestSyncSucceeded: "Latest sync succeeded",
     collectionNeedsAttention: "Collection needs attention", statusUnavailable: "Status unavailable",
     collectionUnavailable: "Collection data unavailable: {error}", energyUnavailable: "Energy data unavailable: {error}",
+    lastChecked: "Last checked: {time}",
     invalidDateOrder: "Choose an end date later than the start date.", periodTooLong: "Choose a period of two years or less."
   }
 };
@@ -96,6 +102,7 @@ let number, oneDecimal, twoDecimals, lossPercent;
 let latestEnergy, latestContext, latestEnergyAnnual;
 let energyError, contextError, formErrorKey;
 let activeRequest;
+let lastContextCheckAt, contextRequestId = 0;
 
 function t(key, values = {}) {
   return translations[language][key].replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ""));
@@ -125,10 +132,14 @@ function setLanguage(nextLanguage) {
   if (latestEnergy) renderEnergy(latestEnergy, latestEnergyAnnual);
   if (energyError) showFeedback(t("energyUnavailable", { error: energyError }));
   if (contextError) renderContextError(contextError);
+  renderCheckedAt();
   if (formErrorKey) setText("form-error", t(formErrorKey));
 }
 
 function setText(id, value) { $(id).textContent = value; }
+function renderCheckedAt() {
+  setText("status-checked", lastContextCheckAt ? t("lastChecked", { time: dateTime(lastContextCheckAt) }) : "");
+}
 function utcDate(offsetDays = 0) {
   const date = new Date();
   date.setUTCHours(0, 0, 0, 0);
@@ -160,7 +171,7 @@ function errorDetail(response, body) {
   return typeof body?.detail === "string" ? body.detail : `HTTP ${response.status}`;
 }
 async function getJson(url, signal) {
-  const response = await fetch(url, { signal });
+  const response = await fetch(url, { signal, cache: "no-store" });
   const body = await response.json().catch(() => null);
   if (!response.ok) throw new Error(errorDetail(response, body));
   return body;
@@ -209,9 +220,9 @@ function renderEnergy(data, annual) {
   setText("gross-label", t(annual ? "grossAnnual" : "grossPeriod"));
   setText("p50-label", t(annual ? "p50Annual" : "p50Period"));
   setText("p90-label", t(annual ? "p90Annual" : "p90Period"));
-  setText("gross-value", displayEnergy(annual ? data.annualized_gross_mwh : data.gross_energy_mwh));
-  setText("p50-value", displayEnergy(annual ? data.annualized_p50_mwh : data.p50_mwh));
-  setText("p90-value", displayEnergy(annual ? data.annualized_p90_mwh : data.p90_mwh));
+  setText("gross-value", displayEnergy(data.gross_energy_mwh));
+  setText("p50-value", displayEnergy(data.p50_mwh));
+  setText("p90-value", displayEnergy(data.p90_mwh));
   setText("gross-note", t(annual ? "grossAnnualNote" : "grossPeriodNote"));
   setText("p50-note", t(annual ? "p50AnnualNote" : "p50PeriodNote"));
   setText("p90-note", t(annual ? "p90AnnualNote" : "p90PeriodNote"));
@@ -229,8 +240,19 @@ function renderEnergy(data, annual) {
     : "";
   setText("monthly-aside", t(partialMonths ? "monthlyPartial" : "monthlyObserved"));
   setText("method-note", annual
-    ? t("annualMethod", { usable: number.format(data.usable_hours), expected: number.format(data.expected_hours), partial: partialMonths })
+    ? t("annualMethod", { usable: number.format(data.usable_hours), partial: partialMonths })
     : t("periodMethod"));
+  $("annualized-note").hidden = !annual;
+  if (annual) {
+    setText("annualized-note", data.annualization_factor == null
+      ? t("annualizedUnavailable")
+      : t("annualizedMethod", {
+        expected: number.format(data.expected_hours),
+        gross: number.format(data.annualized_gross_mwh),
+        p50: number.format(data.annualized_p50_mwh),
+        p90: number.format(data.annualized_p90_mwh),
+      }));
+  }
   renderMonthly(data.monthly_energy);
 }
 
@@ -319,6 +341,9 @@ function renderContext(data) {
 }
 function renderContextError(error) {
   setStatus(t("statusUnavailable"), "unknown");
+  setText("last-measurement", "—");
+  setText("last-sync", "—");
+  setText("next-sync", "—");
   setText("health-summary", t("collectionUnavailable", { error }));
   renderMeasurements([]);
   renderRuns([]);
@@ -442,15 +467,22 @@ async function loadEnergy() {
   }
 }
 async function loadContext() {
+  const requestId = ++contextRequestId;
   try {
     const data = demoMode ? demoData().context : await getJson("/dashboard/context");
+    if (requestId !== contextRequestId) return;
+    lastContextCheckAt = Date.now();
     renderContext(data);
     latestContext = data;
     contextError = null;
   } catch (error) {
+    if (requestId !== contextRequestId) return;
+    lastContextCheckAt = Date.now();
+    latestContext = null;
     contextError = error.message;
     renderContextError(contextError);
   }
+  renderCheckedAt();
 }
 
 $("period-select").addEventListener("change", () => {
@@ -483,3 +515,9 @@ if (demoMode) {
 }
 loadContext();
 loadEnergy();
+if (!demoMode) {
+  setInterval(() => { if (!document.hidden) loadContext(); }, 5 * 60 * 1000);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && (!lastContextCheckAt || Date.now() - lastContextCheckAt > 60 * 1000)) loadContext();
+  });
+}

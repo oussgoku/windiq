@@ -97,6 +97,7 @@ th:first-child, td:first-child { text-align: left; }
 td { text-align: center; font-variant-numeric: tabular-nums; }
 th small { font-size: 11px; font-weight: 450; }
 .health-summary { margin-top: 13px; min-height: 28px; color: #3b5276; font-size: 13px; }
+.status-checked { margin: 4px 0 0; color: #6b7f9e; font-size: 12px; }
 .health-line, .run-item { display: flex; align-items: center; gap: 10px; }
 .health-line time, .run-item time { margin-left: auto; white-space: nowrap; color: #6f82a2; font-size: 12px; }
 .run-icon { width: 20px; height: 20px; flex: none; display: inline-flex; justify-content: center; align-items: center; border-radius: 50%; background: #20a983; color: #fff; font-weight: 700; font-size: 12px; }
