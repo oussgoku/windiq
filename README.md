@@ -34,7 +34,8 @@ languages; the choice is saved in the browser for later visits. The annual cards
 show energy calculated from usable measurements in the last 12 months. An
 additional gap-adjusted estimate appears in the methodology panel. Collection
 status and recent runs refresh every five minutes while the tab is visible,
-and the dashboard shows when they were last checked.
+and the dashboard shows when they were last checked. Displayed timestamps use
+`Europe/Berlin` (MEZ/MESZ); calculation windows and API timestamps remain UTC.
 
 To test the frontend and API together without upstream credentials, run
 `docker compose -f compose.preview.yaml up -d --build` and open

@@ -6,19 +6,19 @@ const translations = {
     overview: "Übersicht", measurements: "Messwerte", operations: "Betrieb", checkingStatus: "Status wird geprüft",
     pageTitle: "Energieertrag im Überblick", referenceTurbine: "Referenzturbine", timePeriod: "Zeitraum",
     last12Months: "Letzte 12 Monate", last30Days: "Letzte 30 Tage", last7Days: "Letzte 7 Tage", customPeriod: "Eigener Zeitraum",
-    startDate: "Startdatum", endDate: "Enddatum", applyPeriod: "Zeitraum anwenden", dateHint: "UTC-Daten · Enddatum ausgeschlossen",
+    startDate: "Startdatum", endDate: "Enddatum", applyPeriod: "Zeitraum anwenden", dateHint: "Zeitraum in UTC · Enddatum ausgeschlossen",
     collectionTimes: "Erfassungszeiten", lastMeasurement: "Letzter Messwert:", summaryLabel: "Ertrag und Datenabdeckung",
     grossTooltip: "Vor Standortverlusten", p50Tooltip: "Nach Verfügbarkeits-, elektrischen und Nachlaufverlusten",
     p90Tooltip: "P50 mit Unsicherheit angepasst", dataCoverage: "Datenabdeckung", coverageTooltip: "Nutzbare Messstunden geteilt durch erwartete Stunden",
     coveragePlaceholder: "— nutzbare Stunden", monthlyChart: "Monatlicher beobachteter Nettoertrag",
     monthlyEnergy: "Monatlicher Ertrag", calculationInputs: "Berechnungsparameter", measurementHeight: "Messhöhe", hubHeight: "Nabenhöhe",
     windShear: "Windscherung α", availabilityLoss: "Verfügbarkeitsverlust", electricalLoss: "Elektrischer Verlust",
-    wakeLoss: "Nachlaufverlust", uncertainty: "Unsicherheit", recentMeasurements: "Letzte Messwerte", timesUTC: "Zeiten in UTC",
-    timeUTC: "Zeit (UTC)", windMast: "Wind am Mast", windHub: "Wind an der Nabe", power: "Leistung",
+    wakeLoss: "Nachlaufverlust", uncertainty: "Unsicherheit", recentMeasurements: "Letzte Messwerte", timesBerlin: "Berliner Ortszeit",
+    timeBerlin: "Zeit (Berlin)", windMast: "Wind am Mast", windHub: "Wind an der Nabe", power: "Leistung",
     loadingMeasurements: "Messwerte werden geladen…", collectionHealth: "Datenerfassung", loadingHistory: "Verlauf wird geladen…",
     recentHistory: "Letzte Ereignisse", methodologyQuality: "Methodik und Datenqualität", expectedHours: "Erwartete Stunden",
     observedHours: "Erfasste Stunden", usableHours: "Nutzbare Stunden", excludedReadings: "Ausgeschlossene Messwerte",
-    footerNote: "Stündliche Messwerte · Gleitender Zeitraum · Zeiten in UTC", methodologyLink: "Methodik ↗",
+    footerNote: "Messzeiten: Berlin (MEZ/MESZ) · Zeitraumgrenzen: UTC", methodologyLink: "Methodik ↗",
     noMonthly: "Keine monatlichen Messwerte verfügbar.", barTitle: "{month}: {energy} MWh aus {hours} nutzbaren Stunden",
     barAria: "{month}: {energy} MWh beobachteter Nettoertrag", incompleteEnergy: "Die Ertragsdaten sind unvollständig.",
     grossAnnual: "Brutto-AEP", grossPeriod: "Bruttoertrag", p50Annual: "Netto-AEP · P50", p50Period: "Nettoertrag · P50",
@@ -55,19 +55,19 @@ const translations = {
     overview: "Overview", measurements: "Measurements", operations: "Operations", checkingStatus: "Checking status",
     pageTitle: "Energy yield overview", referenceTurbine: "Reference turbine", timePeriod: "Time period",
     last12Months: "Last 12 months", last30Days: "Last 30 days", last7Days: "Last 7 days", customPeriod: "Custom period",
-    startDate: "Start date", endDate: "End date", applyPeriod: "Apply period", dateHint: "UTC dates · end date excluded",
+    startDate: "Start date", endDate: "End date", applyPeriod: "Apply period", dateHint: "Period in UTC · end date excluded",
     collectionTimes: "Collection times", lastMeasurement: "Last measurement:", summaryLabel: "Energy and coverage summary",
     grossTooltip: "Before site losses", p50Tooltip: "After availability, electrical, and wake losses",
     p90Tooltip: "P50 adjusted for uncertainty", dataCoverage: "Data coverage", coverageTooltip: "Usable measurement hours divided by expected hours",
     coveragePlaceholder: "— usable hours", monthlyChart: "Monthly observed net energy",
     monthlyEnergy: "Monthly energy", calculationInputs: "Calculation inputs", measurementHeight: "Measurement height", hubHeight: "Hub height",
     windShear: "Wind shear α", availabilityLoss: "Availability loss", electricalLoss: "Electrical loss",
-    wakeLoss: "Wake loss", uncertainty: "Uncertainty", recentMeasurements: "Recent measurements", timesUTC: "Times in UTC",
-    timeUTC: "Time (UTC)", windMast: "Wind at mast", windHub: "Wind at hub", power: "Power",
+    wakeLoss: "Wake loss", uncertainty: "Uncertainty", recentMeasurements: "Recent measurements", timesBerlin: "Berlin local time",
+    timeBerlin: "Time (Berlin)", windMast: "Wind at mast", windHub: "Wind at hub", power: "Power",
     loadingMeasurements: "Loading measurements…", collectionHealth: "Collection health", loadingHistory: "Loading collection history…",
     recentHistory: "Recent history", methodologyQuality: "Methodology and data quality", expectedHours: "Expected hours",
     observedHours: "Observed hours", usableHours: "Usable hours", excludedReadings: "Excluded readings",
-    footerNote: "Hourly measurements · Rolling period · Times in UTC", methodologyLink: "Methodology ↗",
+    footerNote: "Measurement times: Berlin (CET/CEST) · Period boundaries: UTC", methodologyLink: "Methodology ↗",
     noMonthly: "No monthly measurements available.", barTitle: "{month}: {energy} MWh from {hours} usable hours",
     barAria: "{month}: {energy} MWh observed net energy", incompleteEnergy: "The energy response is incomplete.",
     grossAnnual: "Gross AEP", grossPeriod: "Gross energy", p50Annual: "Net AEP · P50", p50Period: "Net energy · P50",
@@ -154,11 +154,11 @@ function utcDate(offsetDays = 0) {
 }
 function dateTime(value) {
   if (!value) return "—";
-  return new Intl.DateTimeFormat(language === "de" ? "de-DE" : "en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "UTC" }).format(new Date(value)) + " UTC";
+  return new Intl.DateTimeFormat(language === "de" ? "de-DE" : "en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "Europe/Berlin", timeZoneName: "short" }).format(new Date(value));
 }
 function timeOnly(value) {
   if (!value) return "—";
-  return new Intl.DateTimeFormat(language === "de" ? "de-DE" : "en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "UTC" }).format(new Date(value)) + " UTC";
+  return new Intl.DateTimeFormat(language === "de" ? "de-DE" : "en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "Europe/Berlin", timeZoneName: "short" }).format(new Date(value));
 }
 function monthLabel(value) {
   const parts = new Intl.DateTimeFormat(language === "de" ? "de-DE" : "en-GB", { month: "short", year: "numeric", timeZone: "UTC" }).formatToParts(new Date(`${value}-01T00:00:00Z`));
@@ -274,7 +274,7 @@ function renderMeasurements(rows) {
   }
   for (const measurement of rows) {
     const row = body.insertRow();
-    const values = [dateTime(measurement.timestamp).replace(" UTC", ""), measurement.wind_mast_ms, measurement.wind_hub_ms, measurement.power_mw];
+    const values = [dateTime(measurement.timestamp), measurement.wind_mast_ms, measurement.wind_hub_ms, measurement.power_mw];
     values.forEach((value, index) => {
       const cell = row.insertCell();
       cell.textContent = index === 0 ? value : (value == null ? "—" : oneDecimal.format(value));

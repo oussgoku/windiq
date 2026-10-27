@@ -7,8 +7,8 @@
     <meta name="description" content="WindIQ Dashboard für Windertrag und Datenerfassung." />
     <title>WindIQ | Energieertrag im Überblick</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=13" />
-    <script defer src="./app.js?v=13"></script>
+    <link rel="stylesheet" href="./styles.css?v=14" />
+    <script defer src="./app.js?v=14"></script>
   </head>
   <body>
     <header class="site-header">
@@ -40,7 +40,7 @@
         <label><span data-i18n="startDate">Startdatum</span> <input id="start-date" type="date" required /></label>
         <label><span data-i18n="endDate">Enddatum</span> <input id="end-date" type="date" required /></label>
         <button type="submit" data-i18n="applyPeriod">Zeitraum anwenden</button>
-        <span data-i18n="dateHint">UTC-Daten · Enddatum ausgeschlossen</span>
+        <span data-i18n="dateHint">Zeitraum in UTC · Enddatum ausgeschlossen</span>
       </form>
       <p id="form-error" class="form-error" role="alert" hidden></p>
       <div id="feedback" class="feedback" role="status" aria-live="polite" hidden></div>
@@ -79,8 +79,8 @@
 
       <div class="lower-grid">
         <section class="panel measurements-panel" id="measurements" aria-labelledby="measurements-title">
-          <div class="panel-title"><h2 id="measurements-title"><span class="panel-icon" aria-hidden="true">☷</span><span data-i18n="recentMeasurements">Letzte Messwerte</span></h2><span class="panel-aside" data-i18n="timesUTC">Zeiten in UTC</span></div>
-          <div class="table-scroll"><table><thead><tr><th scope="col" data-i18n="timeUTC">Zeit (UTC)</th><th scope="col"><span data-i18n="windMast">Wind am Mast</span><br><small>(m/s)</small></th><th scope="col"><span data-i18n="windHub">Wind an der Nabe</span><br><small>(m/s)</small></th><th scope="col"><span data-i18n="power">Leistung</span><br><small>(MW)</small></th></tr></thead><tbody id="measurements-body"><tr><td colspan="4" data-i18n="loadingMeasurements">Messwerte werden geladen…</td></tr></tbody></table></div>
+          <div class="panel-title"><h2 id="measurements-title"><span class="panel-icon" aria-hidden="true">☷</span><span data-i18n="recentMeasurements">Letzte Messwerte</span></h2><span class="panel-aside" data-i18n="timesBerlin">Berliner Ortszeit</span></div>
+          <div class="table-scroll"><table><thead><tr><th scope="col" data-i18n="timeBerlin">Zeit (Berlin)</th><th scope="col"><span data-i18n="windMast">Wind am Mast</span><br><small>(m/s)</small></th><th scope="col"><span data-i18n="windHub">Wind an der Nabe</span><br><small>(m/s)</small></th><th scope="col"><span data-i18n="power">Leistung</span><br><small>(MW)</small></th></tr></thead><tbody id="measurements-body"><tr><td colspan="4" data-i18n="loadingMeasurements">Messwerte werden geladen…</td></tr></tbody></table></div>
         </section>
         <section class="panel health-panel" id="operations" aria-labelledby="health-title">
           <div class="panel-title"><h2 id="health-title"><span class="panel-icon health-icon" aria-hidden="true">⌁</span><span data-i18n="collectionHealth">Datenerfassung</span></h2></div>
@@ -99,7 +99,7 @@
       </div>
 
       <details class="methodology" id="methodology"><summary><span data-i18n="methodologyQuality">Methodik und Datenqualität</span><span aria-hidden="true">⌄</span></summary><div class="methodology-content"><p id="method-note"></p><p id="annualized-note" hidden></p><div class="quality-grid"><div><span data-i18n="expectedHours">Erwartete Stunden</span><strong id="expected-hours">—</strong></div><div><span data-i18n="observedHours">Erfasste Stunden</span><strong id="observed-hours">—</strong></div><div><span data-i18n="usableHours">Nutzbare Stunden</span><strong id="usable-hours">—</strong></div><div><span data-i18n="excludedReadings">Ausgeschlossene Messwerte</span><strong id="excluded-hours">—</strong></div></div><p id="exclusion-note" class="subtle-note"></p></div></details>
-      <footer class="page-footer"><span data-i18n="footerNote">Stündliche Messwerte · Gleitender Zeitraum · Zeiten in UTC</span><a href="#methodology" data-i18n="methodologyLink">Methodik ↗</a></footer>
+      <footer class="page-footer"><span data-i18n="footerNote">Messzeiten: Berlin (MEZ/MESZ) · Zeitraumgrenzen: UTC</span><a href="#methodology" data-i18n="methodologyLink">Methodik ↗</a></footer>
     </main>
   </body>
 </html>
