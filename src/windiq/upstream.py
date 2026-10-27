@@ -2,6 +2,7 @@
 
 from collections.abc import Iterator
 from datetime import datetime
+from math import isfinite
 from time import monotonic, sleep
 from typing import Any, Literal
 
@@ -42,6 +43,7 @@ class WindIQClient:
 
     def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
         for attempt in range(3):
+            retry_delay = 0.5 * (2**attempt)
             try:
                 response = self._http.request(method, path, **kwargs)
             except httpx.TransportError:
@@ -53,8 +55,18 @@ class WindIQClient:
                     return response
                 if attempt == 2:
                     response.raise_for_status()
+                if response.status_code == 429:
+                    try:
+                        retry_after = float(response.headers.get("Retry-After", ""))
+                    except ValueError:
+                        pass
+                    else:
+                        if isfinite(retry_after):
+                            retry_delay = max(
+                                retry_delay, min(60.0, max(0.0, retry_after))
+                            )
                 response.close()
-            sleep(0.5 * (2**attempt))
+            sleep(retry_delay)
         raise RuntimeError("upstream request failed after retries")
 
     def __enter__(self) -> "WindIQClient":

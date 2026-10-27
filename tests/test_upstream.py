@@ -178,3 +178,31 @@ def test_transient_server_errors_are_retried(monkeypatch: pytest.MonkeyPatch) ->
     with WindIQClient(settings, transport=httpx.MockTransport(handle)) as client:
         assert client.get_measurements_page() == {"data": [], "next_cursor": None}
     assert calls == {"/auth/token": 2, "/v1/measurements": 2}
+
+
+def test_rate_limit_waits_for_retry_after(monkeypatch: pytest.MonkeyPatch) -> None:
+    delays: list[float] = []
+    monkeypatch.setattr("windiq.upstream.sleep", delays.append)
+    calls = 0
+
+    def handle(_request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return httpx.Response(429, headers={"Retry-After": "60"})
+        return httpx.Response(
+            200,
+            json={"access_token": "token", "expires_in": 3600, "token_type": "Bearer"},
+        )
+
+    settings = Settings(
+        _env_file=None,
+        database_url="postgresql+psycopg://unused/unused",
+        windiq_api_base_url="https://example.test",
+        windiq_client_id="id",
+        windiq_client_secret="secret",
+    )
+    with WindIQClient(settings, transport=httpx.MockTransport(handle)) as client:
+        assert client._bearer_token() == "token"
+    assert calls == 2
+    assert delays == [60.0]
