@@ -91,7 +91,9 @@ restarts keep it. Destroying the VM disk would remove the history; no separate
 database backup is configured.
 
 Run one pass with `uv run python -m windiq.ingest`. The scheduler interval
-defaults to 3600 seconds. `/health/ingestion` becomes unhealthy when the latest
+defaults to 3600 seconds. On restart it skips the current interval if that
+interval already succeeded, avoiding an extra upstream request during a deploy.
+`/health/ingestion` becomes unhealthy when the latest
 run fails or the last success is more than 9000 seconds old. Run one scheduler
 replica and monitor both `/ready` and `/health/ingestion` from outside the VM.
 Apply migrations before starting the API and worker on each release.
