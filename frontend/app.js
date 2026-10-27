@@ -35,7 +35,9 @@ const translations = {
     periodMethod: "Diese Werte summieren nur nutzbare stündliche Messungen im gewählten UTC-Zeitraum. Fehlende Stunden werden nicht ergänzt; die Monatsbalken zeigen den beobachteten Nettoertrag.",
     noMeasurements: "Noch keine Messwerte verfügbar.", noRuns: "Noch keine Erfassungsläufe vorhanden.",
     sampleRun: "Beispieldaten geladen · {count} Datensätze", sampleRunOne: "Beispieldaten geladen · 1 Datensatz",
-    succeededRun: "Erfassung erfolgreich · {count} Datensätze erfasst", succeededRunOne: "Erfassung erfolgreich · 1 Datensatz erfasst",
+    succeededRun: "Erfassung erfolgreich · {count} Datensätze vom API erhalten", succeededRunOne: "Erfassung erfolgreich · 1 Datensatz vom API erhalten",
+    viewAllRuns: "Alle Läufe anzeigen", hideAllRuns: "Verlauf schließen", allRuns: "Alle Erfassungsläufe",
+    loadMoreRuns: "Weitere laden", loadingRuns: "Läufe werden geladen…", runsUnavailable: "Läufe konnten nicht geladen werden: {error}",
     demoTimeout: "Vorübergehende Zeitüberschreitung bei der Datenerfassung (automatisch behoben)",
     failedRun: "Erfassung {status}{error}", statusSucceeded: "erfolgreich", statusFailed: "fehlgeschlagen", statusRunning: "läuft",
     fixtureBadge: "Lokale API · Beispieldaten", demoBadge: "Demo-Vorschau · Beispieldaten", windSite: "Windpark", fixtureSite: "Lokaler Teststandort",
@@ -83,6 +85,8 @@ const translations = {
     noMeasurements: "No measurements available yet.", noRuns: "No collection runs recorded yet.",
     sampleRun: "Sample data loaded · {count} records", sampleRunOne: "Sample data loaded · 1 record",
     succeededRun: "Collection succeeded · {count} records seen", succeededRunOne: "Collection succeeded · 1 record seen",
+    viewAllRuns: "View all runs", hideAllRuns: "Hide run history", allRuns: "All collection runs",
+    loadMoreRuns: "Load more", loadingRuns: "Loading runs…", runsUnavailable: "Could not load runs: {error}",
     demoTimeout: "Temporary ingestion timeout (auto-recovered)",
     failedRun: "Collection {status}{error}", statusSucceeded: "succeeded", statusFailed: "failed", statusRunning: "running",
     fixtureBadge: "Local API · Sample data", demoBadge: "Demo preview · Sample data", windSite: "Wind site", fixtureSite: "Local test fixture",
@@ -103,6 +107,7 @@ let latestEnergy, latestContext, latestEnergyAnnual;
 let energyError, contextError, formErrorKey;
 let activeRequest;
 let lastContextCheckAt, contextRequestId = 0;
+let allRuns = [], nextRunCursor = null, allRunsOpen = false, allRunsLoading = false, allRunsError = null, allRunsRequestId = 0;
 
 function t(key, values = {}) {
   return translations[language][key].replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ""));
@@ -132,6 +137,7 @@ function setLanguage(nextLanguage) {
   if (latestEnergy) renderEnergy(latestEnergy, latestEnergyAnnual);
   if (energyError) showFeedback(t("energyUnavailable", { error: energyError }));
   if (contextError) renderContextError(contextError);
+  renderAllRuns();
   renderCheckedAt();
   if (formErrorKey) setText("form-error", t(formErrorKey));
 }
@@ -275,8 +281,8 @@ function renderMeasurements(rows) {
     });
   }
 }
-function renderRuns(runs, fixtureMode = false) {
-  const list = $("run-history");
+function renderRuns(runs, fixtureMode = false, listId = "run-history", showAll = false) {
+  const list = $(listId);
   list.replaceChildren();
   if (!runs?.length) {
     const item = document.createElement("li");
@@ -284,7 +290,7 @@ function renderRuns(runs, fixtureMode = false) {
     list.append(item);
     return;
   }
-  for (const run of runs.slice(0, 3)) {
+  for (const run of showAll ? runs : runs.slice(0, 3)) {
     const item = document.createElement("li");
     item.className = `run-item is-${fixtureMode ? "fixture" : run.status}`;
     const icon = document.createElement("span");
@@ -299,9 +305,47 @@ function renderRuns(runs, fixtureMode = false) {
       : (run.status === "succeeded" ? t(run.records_seen === 1 ? "succeededRunOne" : "succeededRun", { count: number.format(run.records_seen) })
         : t("failedRun", { status: translations[language][statusKey] || status, error: errorText ? ` · ${errorText}` : "" }));
     const time = document.createElement("time");
-    time.textContent = fixtureMode ? dateTime(run.finished_at || run.started_at) : timeOnly(run.finished_at || run.started_at);
+    time.textContent = fixtureMode || showAll ? dateTime(run.finished_at || run.started_at) : timeOnly(run.finished_at || run.started_at);
     item.append(icon, description, time);
     list.append(item);
+  }
+}
+function renderAllRuns() {
+  setText("view-all-runs", t(allRunsOpen ? "hideAllRuns" : "viewAllRuns"));
+  if (!allRunsOpen) return;
+  if (allRunsLoading && !allRuns.length) {
+    setText("all-runs", t("loadingRuns"));
+  } else {
+    renderRuns(allRuns, latestContext?.data_mode === "fixture", "all-runs", true);
+  }
+  $("all-runs-error").hidden = !allRunsError;
+  if (allRunsError) setText("all-runs-error", t("runsUnavailable", { error: allRunsError }));
+  $("load-more-runs").hidden = nextRunCursor === null;
+  $("load-more-runs").disabled = allRunsLoading;
+  setText("load-more-runs", t(allRunsLoading ? "loadingRuns" : "loadMoreRuns"));
+}
+async function loadRunPage(reset = false) {
+  if (allRunsLoading) return;
+  const requestId = ++allRunsRequestId;
+  allRunsLoading = true;
+  allRunsError = null;
+  if (reset) { allRuns = []; nextRunCursor = null; }
+  renderAllRuns();
+  try {
+    const data = demoMode
+      ? { runs: demoData().context.recent_runs, next_before_id: null }
+      : await getJson(`/ingestion/runs?limit=20${nextRunCursor === null ? "" : `&before_id=${nextRunCursor}`}`);
+    if (requestId !== allRunsRequestId) return;
+    allRuns.push(...data.runs);
+    nextRunCursor = data.next_before_id;
+  } catch (error) {
+    if (requestId !== allRunsRequestId) return;
+    allRunsError = error.message;
+  } finally {
+    if (requestId === allRunsRequestId) {
+      allRunsLoading = false;
+      renderAllRuns();
+    }
   }
 }
 function renderContext(data) {
@@ -490,6 +534,15 @@ $("period-select").addEventListener("change", () => {
   if ($("period-select").value !== "custom") loadEnergy();
 });
 $("custom-form").addEventListener("submit", (event) => { event.preventDefault(); loadEnergy(); });
+$("view-all-runs").addEventListener("click", () => {
+  allRunsOpen = !allRunsOpen;
+  $("all-runs-panel").hidden = !allRunsOpen;
+  $("view-all-runs").setAttribute("aria-expanded", String(allRunsOpen));
+  if (allRunsOpen) loadRunPage(true);
+  else { ++allRunsRequestId; allRunsLoading = false; }
+  renderAllRuns();
+});
+$("load-more-runs").addEventListener("click", () => loadRunPage());
 function updateNavigation() {
   const section = location.hash === "#measurements" ? "measurements"
     : (["#operations", "#methodology"].includes(location.hash) ? "operations" : "overview");

@@ -7,8 +7,8 @@
     <meta name="description" content="WindIQ Dashboard für Windertrag und Datenerfassung." />
     <title>WindIQ | Energieertrag im Überblick</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=12" />
-    <script defer src="./app.js?v=12"></script>
+    <link rel="stylesheet" href="./styles.css?v=13" />
+    <script defer src="./app.js?v=13"></script>
   </head>
   <body>
     <header class="site-header">
@@ -88,6 +88,13 @@
           <p id="status-checked" class="status-checked"></p>
           <div class="history-heading"><span data-i18n="recentHistory">Letzte Ereignisse</span><span></span></div>
           <ul id="run-history" class="run-history"></ul>
+          <button id="view-all-runs" class="history-action" type="button" aria-controls="all-runs-panel" aria-expanded="false" data-i18n="viewAllRuns">Alle Läufe anzeigen</button>
+          <div id="all-runs-panel" class="all-runs-panel" hidden>
+            <div class="history-heading"><span data-i18n="allRuns">Alle Erfassungsläufe</span><span></span></div>
+            <ul id="all-runs" class="run-history all-runs-list"></ul>
+            <p id="all-runs-error" class="history-error" role="alert" hidden></p>
+            <button id="load-more-runs" class="history-action" type="button" data-i18n="loadMoreRuns" hidden>Weitere laden</button>
+          </div>
         </section>
       </div>
 

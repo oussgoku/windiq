@@ -108,6 +108,13 @@ th small { font-size: 11px; font-weight: 450; }
 .run-history { list-style: none; margin: 5px 0 0; padding: 0; }
 .run-item { color: #53688b; font-size: 12px; padding: 5px 0; }
 .run-item .run-icon { width: 19px; height: 19px; }
+.history-action { margin-top: 9px; padding: 5px 0; border: 0; background: none; color: #1763aa; font: inherit; font-size: 12px; font-weight: 650; cursor: pointer; text-align: left; }
+.history-action:hover { text-decoration: underline; }
+.history-action:focus-visible { outline: 2px solid #1763aa; outline-offset: 3px; }
+.all-runs-panel .history-heading { margin-top: 12px; }
+.all-runs-list { max-height: 360px; overflow-y: auto; padding-right: 4px; }
+.all-runs-list .run-item { border-bottom: 1px solid #eef2f7; }
+.history-error { margin: 7px 0 0; color: #a33636; font-size: 12px; }
 .methodology { margin-top: 14px; border: 1px solid #dce5f0; border-radius: 7px; background: #fff; color: #3f5579; }
 .methodology summary { cursor: pointer; padding: 14px 18px; display: flex; justify-content: space-between; font-size: 13px; font-weight: 650; }
 .methodology summary::marker { content: ""; }

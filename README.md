@@ -53,6 +53,7 @@ worker or use the normal local database. Stop it with
 | `GET /energy/annual` | Rolling 12-month AEP, P50, P90, and coverage |
 | `GET /energy?start=...&end=...` | Observed energy for a selected UTC window |
 | `GET /dashboard/context` | Site inputs, recent measurements, and collection status for the dashboard |
+| `GET /ingestion/runs?limit=20&before_id=...` | Newest-first stored collection runs, paginated with `next_before_id` |
 
 The annual window ends at the current UTC midnight and starts on the same date
 one year earlier. It includes the start and excludes the end. The API reports
@@ -82,6 +83,12 @@ the latest source update time with a one-second overlap so corrected records
 are picked up. Measurements and the sync checkpoint commit together after the
 last page. Invalid readings are retained and counted, rather than turned into
 zero wind speeds.
+
+The dashboard shows the three most recent runs and can page through the full
+`ingestion_runs` history. Production PostgreSQL stores that table in the
+`postgres_data` Docker volume on the VM disk, so app redeploys and container
+restarts keep it. Destroying the VM disk would remove the history; no separate
+database backup is configured.
 
 Run one pass with `uv run python -m windiq.ingest`. The scheduler interval
 defaults to 3600 seconds. `/health/ingestion` becomes unhealthy when the latest

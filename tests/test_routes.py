@@ -11,6 +11,46 @@ from windiq.database import Base
 from windiq.models import IngestionRun, Measurement, SyncState
 
 
+def test_ingestion_runs_pages_include_the_full_stored_history(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    sessions = sessionmaker(bind=engine, expire_on_commit=False)
+    monkeypatch.setattr(routes, "get_session_factory", lambda: sessions)
+    now = datetime.now(UTC)
+    try:
+        with sessions() as session:
+            for index in range(5):
+                session.add(
+                    IngestionRun(
+                        started_at=now,
+                        finished_at=now,
+                        status="failed" if index == 1 else "succeeded",
+                        records_seen=index + 1,
+                        records_inserted=index,
+                        records_updated=1,
+                        error_summary="temporary error" if index == 1 else None,
+                    )
+                )
+            session.commit()
+
+        first = routes.ingestion_runs(limit=2, before_id=None)
+        second = routes.ingestion_runs(limit=2, before_id=first["next_before_id"])
+        third = routes.ingestion_runs(limit=2, before_id=second["next_before_id"])
+        assert [run["id"] for run in first["runs"]] == [5, 4]
+        assert [run["id"] for run in second["runs"]] == [3, 2]
+        assert [run["id"] for run in third["runs"]] == [1]
+        assert first["next_before_id"] == 4
+        assert second["next_before_id"] == 2
+        assert third["next_before_id"] is None
+        assert second["runs"][1]["status"] == "failed"
+        assert second["runs"][1]["error_summary"] == "temporary error"
+        assert first["runs"][0]["records_inserted"] == 4
+    finally:
+        engine.dispose()
+
+
 def test_ingestion_health_reports_failed_and_stale_runs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

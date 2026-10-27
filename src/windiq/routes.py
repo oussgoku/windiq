@@ -25,6 +25,41 @@ from windiq.upstream import WindIQClient
 router = APIRouter()
 
 
+@router.get("/ingestion/runs")
+def ingestion_runs(
+    limit: int = Query(default=20, ge=1, le=100),
+    before_id: int | None = Query(default=None, ge=1),
+) -> dict[str, object]:
+    """Return collection runs in newest-first pages without discarding history."""
+    query = select(IngestionRun).order_by(IngestionRun.id.desc()).limit(limit + 1)
+    if before_id is not None:
+        query = query.where(IngestionRun.id < before_id)
+    try:
+        with get_session_factory()() as session:
+            page = session.scalars(query).all()
+    except SQLAlchemyError as exc:
+        raise HTTPException(status_code=503, detail="database unavailable") from exc
+
+    has_more = len(page) > limit
+    runs = page[:limit]
+    return {
+        "runs": [
+            {
+                "id": run.id,
+                "started_at": run.started_at,
+                "finished_at": run.finished_at,
+                "status": run.status,
+                "records_seen": run.records_seen,
+                "records_inserted": run.records_inserted,
+                "records_updated": run.records_updated,
+                "error_summary": run.error_summary,
+            }
+            for run in runs
+        ],
+        "next_before_id": runs[-1].id if has_more else None,
+    }
+
+
 @router.get("/dashboard/context")
 def dashboard_context() -> dict[str, object]:
     """Current inputs, recent readings, and ingestion history for the dashboard."""
